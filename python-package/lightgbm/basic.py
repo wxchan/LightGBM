@@ -972,8 +972,15 @@ class Dataset(object):
         if self.categorical_feature == categorical_feature:
             return
         if self.data is not None:
-            self.categorical_feature = categorical_feature
-            self._free_handle()
+            if self.categorical_feature is None:
+                self.categorical_feature = categorical_feature
+                self._free_handle()
+            elif categorical_feature != "auto":
+                warnings.warn("categorical_feature in Dataset will be overrided.")
+                self.categorical_feature = categorical_feature
+                self._free_handle()
+            else:
+                warnings.warn("categorical_feature in Dataset is already set, won't be overrided by 'auto'.") 
         else:
             raise LightGBMError("Cannot set categorical feature after freed raw data, set free_raw_data=False when construct Dataset to avoid this.")
 
